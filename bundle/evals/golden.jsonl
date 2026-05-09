@@ -1,0 +1,10 @@
+{"id": "gnomon-001", "trace_id": "lyra-T-001", "expected_primitive": "context_compact", "expected_class": "compaction_loss", "expected_pass": true}
+{"id": "gnomon-002", "trace_id": "lyra-T-002", "expected_primitive": "permission_check", "expected_class": "mis_permissioned", "expected_pass": true}
+{"id": "gnomon-003", "trace_id": "lyra-T-003", "expected_primitive": "skill_load", "expected_class": "skill_miss", "expected_pass": true}
+{"id": "gnomon-004", "trace_id": "claude-T-001", "expected_primitive": "context_compact", "expected_class": "compaction_loss", "expected_pass": true}
+{"id": "gnomon-005", "trace_id": "claude-T-002", "expected_primitive": "skill_load", "expected_class": "skill_miss", "expected_pass": true}
+{"id": "gnomon-006", "trace_id": "openclaw-T-001", "expected_primitive": "context_compact", "expected_class": "compaction_loss", "expected_pass": true}
+{"id": "gnomon-007", "trace_id": "hermes-T-001", "expected_primitive": "permission_check", "expected_class": "mis_permissioned", "expected_pass": true}
+{"id": "gnomon-008", "trace_id": "lyra-T-004", "expected_primitive": "memory_read", "expected_class": "unknown", "expected_pass": true}
+{"id": "gnomon-009", "trace_id": "lyra-T-005", "expected_primitive": "tool_call", "expected_class": "unknown", "expected_pass": true}
+{"id": "gnomon-010", "trace_id": "lyra-T-006", "expected_primitive": "verifier_run", "expected_class": "unknown", "expected_pass": true}

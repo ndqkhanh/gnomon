@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gnomon — harness-aware evaluator + closed evolution loop</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #141821;
+    --ink: #e8ecf1;
+    --muted: #8b95a7;
+    --accent: #ffd166;
+    --good: #86efac;
+    --warn: #fda4af;
+    --line: #1f2633;
+    --mono: 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+               line-height: 1.55; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 32px; margin-bottom: 40px; }
+  h1 { font-size: 2.6rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+  h1 .gnomon-accent { color: var(--accent); }
+  .tag { color: var(--muted); font-size: 0.95rem; margin: 0 0 16px; }
+  .lede { color: var(--ink); font-size: 1.1rem; max-width: 720px; }
+  h2 { font-size: 1.4rem; margin: 48px 0 16px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.05rem; margin: 24px 0 8px; color: var(--accent); }
+  p { color: var(--ink); }
+  .muted { color: var(--muted); }
+  code, pre { font-family: var(--mono); font-size: 0.88rem; }
+  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+        padding: 16px; overflow-x: auto; }
+  code.inline { background: var(--panel); padding: 2px 6px; border-radius: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 14px; margin: 16px 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          padding: 16px; }
+  .card h4 { margin: 0 0 6px; font-size: 0.95rem; color: var(--accent); }
+  .card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
+          font-size: 0.78rem; border: 1px solid var(--line); color: var(--muted); margin-right: 6px; }
+  .pill.good { color: var(--good); border-color: color-mix(in srgb, var(--good) 40%, var(--line)); }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line);
+           vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 0.82rem;
+       text-transform: uppercase; letter-spacing: 0.08em; }
+  .diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+             padding: 16px; overflow-x: auto; font-family: var(--mono); font-size: 0.78rem;
+             white-space: pre; color: var(--ink); }
+  footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line);
+           color: var(--muted); font-size: 0.85rem; }
+  ul { padding-left: 20px; }
+  li { margin: 4px 0; }
+  .section-split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 640px) { .section-split { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><span class="gnomon-accent">Gnomon</span> — harness-aware evaluator + closed evolution loop</h1>
+  <p class="tag">A portable Harness IR · primitive-level failure attribution · Autogenesis-shaped resource patches · chaos substrate · cross-harness bundler</p>
+  <p class="lede">
+    The sundial's gnomon casts the shadow that reveals the hour. Gnomon's attribution
+    engine casts the shadow that reveals <em>which harness primitive</em> failed — making
+    invisible primitive-level failures legible and the evolution loop's reward signal
+    portable across every agent harness.
+  </p>
+  <p>
+    <span class="pill good">MVP shipped</span>
+    <span class="pill">66 tests · 10 modules</span>
+    <span class="pill">FastAPI on :8011</span>
+    <span class="pill">April 2026</span>
+  </p>
+</header>
+
+<h2>The three gaps Gnomon closes</h2>
+<div class="grid">
+  <div class="card">
+    <h4>G1 · Harness IR</h4>
+    <p>No LLVM-equivalent exists for agent harnesses in 2026. 14+ frameworks describe the
+    same loop-over-tools-with-memory-and-guards in incompatible formats.</p>
+  </div>
+  <div class="card">
+    <h4>G2 · Primitive attribution</h4>
+    <p>Trace stores say "the trace failed." None say "compaction dropped the fact on turn
+    7" or "permission blocked a legitimate action." You can't improve what you can't
+    attribute.</p>
+  </div>
+  <div class="card">
+    <h4>G3 · Chaos for agents</h4>
+    <p>Classical chaos engineering exists for infrastructure. For agents, no framework
+    injects tool-latency spikes, stale memory reads, or compaction-induced fact loss to
+    stress-test recovery paths.</p>
+  </div>
+</div>
+
+<h2>What the loop looks like</h2>
+<div class="diagram">┌───────────────────────────────────────────────────────────────────┐
+│                             Gnomon                                │
+│                                                                   │
+│  [Adapters] ─► [HIR normaliser] ─► [Trace store, hash-chained]    │
+│                         │                                         │
+│                         ▼                                         │
+│                [Harness-Aware Failure Classifier]                 │
+│                (primitive · class · quote · suggested patch)      │
+│                         │                                         │
+│           ┌─────────────┼─────────────┐                           │
+│           ▼             ▼             ▼                           │
+│   [Evolution loop]  [SHP chaos]  [Metrics / decorrelation]        │
+│   propose→assess    inject       primitive coverage +             │
+│   →commit→rollback  faults       pairwise failure decorrelation   │
+│           │                                                       │
+│           ▼                                                       │
+│   [Cross-harness patch bundle]                                    │
+│   (Claude Code SKILL.md · Cursor rule · LangGraph node · …)       │
+└───────────────────────────────────────────────────────────────────┘</div>
+
+<h2>The 12 HIR primitives</h2>
+<p class="muted">Drawn directly from the research corpus's independent landmark files (docs 01–12, 36, 57). Fewer primitives compress attribution poorly; more inflate schema without differentiating.</p>
+<div class="grid">
+  <div class="card"><h4>agent_loop</h4><p>docs/01</p></div>
+  <div class="card"><h4>subagent_delegation</h4><p>docs/02</p></div>
+  <div class="card"><h4>plan_mode</h4><p>docs/03</p></div>
+  <div class="card"><h4>skill_invocation</h4><p>docs/04 · docs/19</p></div>
+  <div class="card"><h4>hook</h4><p>docs/05</p></div>
+  <div class="card"><h4>permission_check</h4><p>docs/06</p></div>
+  <div class="card"><h4>tool_use</h4><p>ubiquitous</p></div>
+  <div class="card"><h4>compaction_event</h4><p>docs/08</p></div>
+  <div class="card"><h4>memory_read / memory_write</h4><p>docs/09</p></div>
+  <div class="card"><h4>verifier_call</h4><p>docs/11</p></div>
+  <div class="card"><h4>todo_scratchpad</h4><p>docs/12</p></div>
+  <div class="card"><h4>evolution_patch</h4><p>docs/36 (Autogenesis) · docs/57</p></div>
+</div>
+
+<h2>How a failure becomes a patch</h2>
+<ol>
+  <li>Claude Code session emits a trace export. Adapter normalises into HIR events.</li>
+  <li>Trace store appends hash-chained; validates DAG integrity.</li>
+  <li>HAFC attributes each failure to a primitive (e.g. <code class="inline">skill_miss</code> on <code class="inline">weekly_review</code>).</li>
+  <li>Evolution loop proposes an Autogenesis-shaped <code class="inline">ResourcePatch</code> (add a trigger phrase to the skill).</li>
+  <li>Replay sandbox re-executes the trace with the patched resource; HAFC compares attribution deltas.</li>
+  <li>Gate decides: Pass^k non-regression, attribution volume dropped, mesa-guard clear, second-family judge agrees.</li>
+  <li>Commit → resource DAG advances; bundler emits Claude Code SKILL.md (and, on roadmap, Cursor / LangGraph / LobeHub / OpenClaw artefacts).</li>
+  <li>72h rollback window watches for regression.</li>
+</ol>
+
+<h2>MVP scope (shipped)</h2>
+<div class="section-split">
+  <div>
+    <h3>Shipped</h3>
+    <ul>
+      <li>12-primitive HIR schema with hash-chain integrity</li>
+      <li>Claude Code adapter + native passthrough</li>
+      <li>Append-only, tenant-isolated trace store + right-to-erasure</li>
+      <li>3 HAFC classifiers (compaction_loss, mis_permissioned, skill_miss)</li>
+      <li>2 SHP injectors (tool_use.latency_spike, memory_read.stale_fact)</li>
+      <li>Autogenesis-shaped patch protocol (skill resources)</li>
+      <li>Replay harness with SyntheticLLM (deterministic)</li>
+      <li>Evolution loop with Pass^k + mesa-guard gate</li>
+      <li>Cross-harness bundler (Claude Code SKILL.md)</li>
+      <li>HMAC-signed, hash-chained audit log</li>
+      <li>FastAPI surface with 10 endpoints</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Roadmap (post-MVP)</h3>
+    <ul>
+      <li>LangGraph / Archon / DeerFlow / RAGFlow / LobeHub / OpenClaw adapters</li>
+      <li>LLM-judge HAFC ensemble + human calibration loop</li>
+      <li>10 additional SHP injectors (compaction drops, permission inversions, plan staleness, subagent handoff corruption)</li>
+      <li>Prompt / permission / verifier / memory-index / hook patch classes</li>
+      <li>Bundler targets: Cursor, Codex, OpenCode, Antigravity, Gemini, LangGraph, LobeHub, OpenClaw</li>
+      <li>Federated LaStraj corpus across tenants (opt-in, anonymised)</li>
+      <li>Postgres-backed store + Prometheus metrics + web dashboard</li>
+      <li>Signed-patch-required mode for production tenants</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Ten-week breakthrough plan</h2>
+<table>
+  <thead><tr><th>Weeks</th><th>Ship</th><th>Unlocks</th></tr></thead>
+  <tbody>
+    <tr><td>1–2</td><td>HIR schema v0.1 + adapters for Claude Code + LangGraph</td><td>G1 (post-hoc interchange)</td></tr>
+    <tr><td>3–4</td><td>HIR store + HAFC's compaction_loss classifier</td><td>G2 (first attribution class)</td></tr>
+    <tr><td>5–6</td><td>SHP with 2 injectors wired into Claude Code adapter</td><td>G3 (chaos substrate)</td></tr>
+    <tr><td>7–8</td><td>Evolution loop v0 with skill resource + Pass^k gate</td><td>Closed loop</td></tr>
+    <tr><td>9–10</td><td>Cross-harness bundler + primitive-coverage dashboard</td><td>OSS flywheel</td></tr>
+  </tbody>
+</table>
+
+<h2>Design grounding</h2>
+<ul>
+  <li><strong>Attribution-as-SEA-reward.</strong> Voyager uses env success, Hermes uses skill-reuse, Autogenesis uses a gated evaluator — every SEA system reinvents reward. Gnomon's primitive-attribution is the first <em>shared</em> reward signal. Anchors: docs 19, 36, 55, 56, 57, 58, 59.</li>
+  <li><strong>Cross-channel evidence.</strong> Inherited from Vertex-Eval. An attribution is <em>confirmed</em> only when ≥ 2 of {trace, audit, state-snapshot} agree. Anchor: doc 38.</li>
+  <li><strong>HORIZON-style attribution.</strong> Primitive + quoted step + reproducer. Anchor: doc 27.</li>
+  <li><strong>Chaos for agents.</strong> Population-reliability depends on decorrelated failures. Anchors: docs 49, 53.</li>
+  <li><strong>Meta-harness positioning.</strong> Gnomon does not compete with authoring (Archon, DeerFlow, LangGraph) — it <em>consumes</em> their traces and ships improvements back. Anchor: doc 66.</li>
+</ul>
+
+<h2>Start here</h2>
+<pre>make install   # .venv + vendored harness_core + project editable
+make test      # 66 tests; no API keys required
+make run       # http://localhost:8011/docs</pre>
+
+<footer>
+  <p>Part of the harness-engineering workspace — 10 sibling MVP projects, 67 research deep-dives, one breakthrough. See <a href="../../../docs/67-recommended-breakthrough-project.md">docs/67</a> for the full proposal, and <a href="../../README.md">projects/README.md</a> for siblings.</p>
+  <p class="muted">Gnomon · April 2026 · walking-skeleton MVP · not production-ready.</p>
+</footer>
+
+</div>
+</body>
+</html>

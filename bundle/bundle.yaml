@@ -1,0 +1,24 @@
+apiVersion: lyra.dev/v3
+kind: SourceBundle
+name: gnomon-attributor
+version: 0.1.0
+description: Harness-aware failure attributor + Autogenesis patch proposer over a 12-primitive HIR.
+dual_use: false
+smoke_eval_threshold: 0.95
+persona: persona.md
+skills: skills/
+tools:
+  - kind: native
+    name: gnomon_attribute
+  - kind: mcp
+    name: gnomon_classify
+    server: stdio:./tools/mcp_server.py
+memory:
+  seed: memory/seed.md
+evals:
+  golden: evals/golden.jsonl
+  rubric: evals/rubric.md
+verifier:
+  domain: harness-eval
+  command: python verifier/checker.py
+  budget_seconds: 60
